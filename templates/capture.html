@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Patient Registration & Face Capture</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="flex items-center justify-center h-screen bg-gray-100">
+
+    <div class="bg-white shadow-lg rounded-xl p-8 w-full max-w-lg">
+        <h2 class="text-3xl font-bold text-gray-800 text-center">Patient Registration</h2>
+        <p class="text-gray-600 text-center mt-2">Fill in the details and capture the face.</p>
+
+        <!-- Patient Details Form -->
+        <form id="patientForm" class="mt-6 space-y-4">
+            <input id="name" type="text" placeholder="👤 Full Name" class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-400" required>
+            <input id="age" type="number" placeholder="📅 Age" class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-400" required>
+            <input id="condition" type="text" placeholder="💊 Medical Condition" class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-400" required>
+            <input id="contact" type="text" placeholder="📞 Contact Number" class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-400" required>
+            <textarea id="address" placeholder="🏡 Address" class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-400" required></textarea>
+
+            <button type="submit" class="w-full px-6 py-3 bg-blue-600 text-white font-semibold rounded-lg hover:bg-blue-700 transition">
+                📷 Capture Face
+            </button>
+        </form>
+
+        <!-- Notification Box (Hidden Initially) -->
+        <div id="notification" class="hidden mt-4 p-4 text-white rounded-lg text-lg"></div>
+    </div>
+
+    <script>
+        document.getElementById("patientForm").addEventListener("submit", async function (event) {
+            event.preventDefault();
+
+            const name = document.getElementById("name").value.trim();
+            const age = document.getElementById("age").value.trim();
+            const condition = document.getElementById("condition").value.trim();
+            const contact = document.getElementById("contact").value.trim();
+            const address = document.getElementById("address").value.trim();
+
+            if (!name || !age || !condition || !contact || !address) {
+                showMessage("⚠️ All fields are required!", "bg-yellow-500");
+                return;
+            }
+
+            const data = { name, age, condition, contact, address };
+            console.log("🔹 Sending Data:", data);
+
+            try {
+                const response = await fetch("/capture", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify(data)
+                });
+
+                const result = await response.json();
+                console.log("🔹 Server Response:", result);
+                
+                showMessage(result.message || result.error, result.error ? "bg-red-500" : "bg-green-500");
+
+            } catch (error) {
+                console.error("Capture failed:", error);
+                showMessage("❌ Error capturing face.", "bg-red-500");
+            }
+        });
+
+        function showMessage(message, bgColor) {
+            let notification = document.getElementById("notification");
+            notification.innerText = message;
+            notification.className = `mt-4 p-4 text-white rounded-lg ${bgColor}`;
+            notification.classList.remove("hidden");
+        }
+    </script>
+
+</body>
+</html>

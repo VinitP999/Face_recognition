@@ -1,0 +1,40 @@
+body {
+    font-family: Arial, sans-serif;
+    text-align: center;
+    background-color: #f8f9fa;
+}
+h2 {
+    margin-top: 20px;
+}
+form {
+    display: flex;
+    flex-direction: column;
+    width: 300px;
+    margin: 20px auto;
+}
+input, button {
+    margin: 10px 0;
+    padding: 10px;
+    font-size: 16px;
+}
+.error {
+    color: red;
+}
+.container {
+    width: 80%;
+    margin: auto;
+}
+.navbar {
+    background-color: #343a40;
+    padding: 10px;
+    text-align: center;
+}
+.navbar a {
+    color: white;
+    padding: 14px 20px;
+    text-decoration: none;
+    font-size: 18px;
+}
+.navbar a:hover {
+    background-color: #007bff;
+}

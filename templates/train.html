@@ -1,0 +1,12 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>Train Model</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <h2>Train Face Recognition Model</h2>
+    <button onclick="window.location.href='/run_train_model'">Train Now</button>
+    <a href="{{ url_for('dashboard') }}">Back</a>
+</body>
+</html>
