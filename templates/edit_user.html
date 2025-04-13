@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Edit Patient</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+</head>
+<body class="bg-gradient-to-br from-blue-50 to-blue-100 min-h-screen text-gray-900 font-sans">
+
+  <div class="max-w-3xl mx-auto py-12 px-6">
+    
+    <!-- Back Button -->
+    <a href="/dashboard" class="inline-flex items-center mb-6 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium rounded-full shadow">
+      <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
+      </svg>
+      Back to Dashboard
+    </a>
+
+    <!-- Title -->
+    <h1 class="text-4xl font-extrabold text-blue-800 text-center mb-10">✏️ Edit Patient Information</h1>
+
+    <!-- Edit Form -->
+    <form method="POST" class="bg-white p-8 rounded-3xl shadow-xl space-y-6">
+
+      <!-- Name -->
+      <div>
+        <label for="name" class="block text-sm font-medium text-gray-700 mb-1">Name</label>
+        <input type="text" id="name" name="name" value="{{ user.name }}" required class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring focus:ring-blue-300 focus:outline-none" />
+      </div>
+
+      <!-- Age -->
+      <div>
+        <label for="age" class="block text-sm font-medium text-gray-700 mb-1">Age</label>
+        <input type="number" id="age" name="age" value="{{ user.age }}" required class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring focus:ring-blue-300 focus:outline-none" />
+      </div>
+
+      <!-- Gender -->
+      <div>
+        <label for="gender" class="block text-sm font-medium text-gray-700 mb-1">Gender</label>
+        <input type="text" id="gender" name="gender" value="{{ user.gender }}" required class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring focus:ring-blue-300 focus:outline-none" />
+      </div>
+
+      <!-- History -->
+      <div>
+        <label for="history" class="block text-sm font-medium text-gray-700 mb-1">Medical History</label>
+        <textarea id="history" name="history" rows="4" required class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring focus:ring-blue-300 focus:outline-none">{{ user.history }}</textarea>
+      </div>
+
+      <!-- Save Button -->
+      <div class="flex justify-end">
+        <button type="submit" class="bg-blue-700 text-white px-6 py-3 rounded-full font-semibold hover:bg-blue-800 transition-all duration-200 shadow-lg">
+          💾 Save Changes
+        </button>
+      </div>
+
+    </form>
+  </div>
+
+</body>
+</html>

@@ -1,77 +1,71 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Patient Registration & Face Capture</title>
-    <script src="https://cdn.tailwindcss.com"></script>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Capture Patient Face | Hospital AI</title>
+  <script src="https://cdn.tailwindcss.com"></script>
 </head>
-<body class="flex items-center justify-center h-screen bg-gray-100">
+<body class="bg-gradient-to-br from-blue-50 to-blue-100 min-h-screen flex items-center justify-center text-gray-800">
+  <div class="bg-white rounded-3xl shadow-2xl p-10 w-full max-w-4xl">
 
-    <div class="bg-white shadow-lg rounded-xl p-8 w-full max-w-lg">
-        <h2 class="text-3xl font-bold text-gray-800 text-center">Patient Registration</h2>
-        <p class="text-gray-600 text-center mt-2">Fill in the details and capture the face.</p>
-
-        <!-- Patient Details Form -->
-        <form id="patientForm" class="mt-6 space-y-4">
-            <input id="name" type="text" placeholder="👤 Full Name" class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-400" required>
-            <input id="age" type="number" placeholder="📅 Age" class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-400" required>
-            <input id="condition" type="text" placeholder="💊 Medical Condition" class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-400" required>
-            <input id="contact" type="text" placeholder="📞 Contact Number" class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-400" required>
-            <textarea id="address" placeholder="🏡 Address" class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-400" required></textarea>
-
-            <button type="submit" class="w-full px-6 py-3 bg-blue-600 text-white font-semibold rounded-lg hover:bg-blue-700 transition">
-                📷 Capture Face
-            </button>
-        </form>
-
-        <!-- Notification Box (Hidden Initially) -->
-        <div id="notification" class="hidden mt-4 p-4 text-white rounded-lg text-lg"></div>
+    <!-- Back Button -->
+    <div class="mb-6">
+      <a href="/dashboard" class="inline-flex items-center px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium rounded-full shadow">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
+        </svg>
+        Back to Dashboard
+      </a>
     </div>
 
-    <script>
-        document.getElementById("patientForm").addEventListener("submit", async function (event) {
-            event.preventDefault();
+    <!-- Title -->
+    <h1 class="text-4xl font-extrabold text-center text-blue-700 mb-8">Patient Registration & Face Capture</h1>
 
-            const name = document.getElementById("name").value.trim();
-            const age = document.getElementById("age").value.trim();
-            const condition = document.getElementById("condition").value.trim();
-            const contact = document.getElementById("contact").value.trim();
-            const address = document.getElementById("address").value.trim();
+    <!-- Registration Form -->
+    <form method="POST" action="/capture" class="grid grid-cols-1 md:grid-cols-2 gap-6">
+      
+      <!-- Name -->
+      <div>
+        <label class="block text-sm font-medium text-gray-700 mb-1">Patient Name</label>
+        <input type="text" name="name" required class="w-full px-4 py-3 border border-gray-300 rounded-xl shadow-sm focus:ring-2 focus:ring-blue-300 focus:outline-none" placeholder="John Doe" />
+      </div>
 
-            if (!name || !age || !condition || !contact || !address) {
-                showMessage("⚠️ All fields are required!", "bg-yellow-500");
-                return;
-            }
+      <!-- Age -->
+      <div>
+        <label class="block text-sm font-medium text-gray-700 mb-1">Age</label>
+        <input type="number" name="age" required class="w-full px-4 py-3 border border-gray-300 rounded-xl shadow-sm focus:ring-2 focus:ring-blue-300 focus:outline-none" placeholder="35" />
+      </div>
 
-            const data = { name, age, condition, contact, address };
-            console.log("🔹 Sending Data:", data);
+      <!-- Gender -->
+      <div>
+        <label class="block text-sm font-medium text-gray-700 mb-1">Gender</label>
+        <select name="gender" required class="w-full px-4 py-3 border border-gray-300 rounded-xl shadow-sm focus:ring-2 focus:ring-blue-300 focus:outline-none">
+          <option value="">Select Gender</option>
+          <option value="Male">Male</option>
+          <option value="Female">Female</option>
+          <option value="Other">Other</option>
+        </select>
+      </div>
 
-            try {
-                const response = await fetch("/capture", {
-                    method: "POST",
-                    headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify(data)
-                });
+      <!-- Medical History -->
+      <div>
+        <label class="block text-sm font-medium text-gray-700 mb-1">Medical History</label>
+        <textarea name="history" rows="4" required class="w-full px-4 py-3 border border-gray-300 rounded-xl shadow-sm focus:ring-2 focus:ring-blue-300 focus:outline-none" placeholder="e.g., Diabetes, Hypertension, etc."></textarea>
+      </div>
 
-                const result = await response.json();
-                console.log("🔹 Server Response:", result);
-                
-                showMessage(result.message || result.error, result.error ? "bg-red-500" : "bg-green-500");
+      <!-- Submit Button -->
+      <div class="md:col-span-2 flex justify-center mt-6">
+        <button type="submit" class="bg-blue-700 text-white px-10 py-3 text-lg font-semibold rounded-full shadow-lg hover:bg-blue-800 transition-all duration-300">
+          🚀 Capture Face & Register
+        </button>
+      </div>
+    </form>
 
-            } catch (error) {
-                console.error("Capture failed:", error);
-                showMessage("❌ Error capturing face.", "bg-red-500");
-            }
-        });
-
-        function showMessage(message, bgColor) {
-            let notification = document.getElementById("notification");
-            notification.innerText = message;
-            notification.className = `mt-4 p-4 text-white rounded-lg ${bgColor}`;
-            notification.classList.remove("hidden");
-        }
-    </script>
-
+    <!-- Bottom Link -->
+    <div class="mt-10 text-center">
+      <a href="/dashboard" class="text-blue-600 hover:underline">← Return to Dashboard</a>
+    </div>
+  </div>
 </body>
 </html>

@@ -1,69 +1,52 @@
-import os
 import cv2
 import numpy as np
-import pickle
+import os
 
-def train():
-    dataset_path = "dataset"
-    model_path = "models/trained_model.yml"
-    labels_path = "models/labels.pkl"
+# Define the path to the dataset
+dataset_path = r"D:\vinit\Test 2\dataset"
 
-    if not os.path.exists(dataset_path) or not os.listdir(dataset_path):
-        print("⚠️ No dataset found for training!")
-        return False
+# Path to the Haar cascade classifier file
+haar_cascade_path = os.path.join(os.path.dirname(__file__), "haarcascade_frontalface_default.xml")
 
-    recognizer = cv2.face.LBPHFaceRecognizer_create()
-    face_cascade = cv2.CascadeClassifier("haarcascade_frontalface_default.xml")
+# Check if dataset folder exists
+if not os.path.exists(dataset_path):
+    print(f"Error: Dataset folder not found at {dataset_path}")
+    exit()
 
-    images, labels = [], []
-    label_dict = {}
-    current_id = 0
+# Load the Haar cascade classifier
+face_cascade = cv2.CascadeClassifier(haar_cascade_path)
 
-    for person_name in os.listdir(dataset_path):
-        person_folder = os.path.join(dataset_path, person_name)
-        if not os.path.isdir(person_folder):
-            continue
+if face_cascade.empty():
+    print(f"Error loading Haar cascade file. Check path: {haar_cascade_path}")
+    exit()
 
-        for image_file in os.listdir(person_folder):
-            image_path = os.path.join(person_folder, image_file)
-            image = cv2.imread(image_path, cv2.IMREAD_GRAYSCALE)
+# Initialize LBPH face recognizer
+recognizer = cv2.face.LBPHFaceRecognizer_create()
 
-            if image is None:
-                print(f"❌ ERROR: Could not read {image_path}")
-                continue
+faces, ids = [], []
 
-            faces = face_cascade.detectMultiScale(image, scaleFactor=1.1, minNeighbors=5)
-            if len(faces) == 0:
-                print(f"⚠️ WARNING: No face detected in {image_path}")
-                continue
+# Iterate through all images in the dataset
+for file in os.listdir(dataset_path):
+    if file.endswith(".jpg"):
+        image_path = os.path.join(dataset_path, file)
+        img = cv2.imread(image_path, cv2.IMREAD_GRAYSCALE)
 
-            for (x, y, w, h) in faces:
-                face_resized = cv2.resize(image[y:y+h, x:x+w], (100, 100))
-                images.append(face_resized)
-                labels.append(current_id)
+        # Extract user ID from filename (assumes format user_<id>_<count>.jpg)
+        user_id = int(file.split("_")[1])
+        faces.append(img)
+        ids.append(user_id)
 
-        if len(images) == 0:
-            print(f"⚠️ No valid images found for {person_name}, skipping.")
-            continue
+# Check if any face data is available
+if len(faces) == 0:
+    print("No training data found. Add face images first.")
+    exit()
 
-        label_dict[current_id] = person_name
-        current_id += 1
+# Train the recognizer using face images and their corresponding IDs
+ids = np.array(ids)
+recognizer.train(faces, ids)
 
-    if len(images) == 0:
-        print("⚠️ No valid faces detected! Training aborted.")
-        return False
+# Save the trained model to file
+model_path = os.path.join(os.path.dirname(__file__), "trained_model.yml")
+recognizer.save(model_path)
 
-    images = np.array(images, dtype="uint8")
-    labels = np.array(labels, dtype="int32")
-
-    recognizer.train(images, labels)
-    recognizer.save(model_path)
-
-    with open(labels_path, "wb") as f:
-        pickle.dump(label_dict, f)
-
-    print("✅ Model training completed successfully!")
-    return True
-
-if __name__ == "__main__":
-    train()
+print("\nModel trained and saved successfully.")

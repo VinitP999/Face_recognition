@@ -1,65 +1,75 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Recognize Face</title>
-    <script src="https://cdn.tailwindcss.com"></script>
+  <meta charset="UTF-8">
+  <title>Recognize Face</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+  <script>
+    function startRecognition() {
+      document.getElementById("live-feed").src = "/video";
+      document.getElementById("start-button").classList.add("hidden");
+      document.getElementById("stop-button").classList.remove("hidden");
+    }
+
+    function stopRecognition() {
+      document.getElementById("live-feed").src = "";
+      document.getElementById("start-button").classList.remove("hidden");
+      document.getElementById("stop-button").classList.add("hidden");
+    }
+  </script>
 </head>
-<body class="flex items-center justify-center h-screen bg-gray-100">
+<body class="bg-gradient-to-br from-blue-50 to-blue-100 min-h-screen text-gray-900">
 
-    <div class="bg-white shadow-md rounded-lg p-8 text-center">
-        <h2 class="text-2xl font-bold">Face Recognition</h2>
+  <div class="max-w-3xl mx-auto py-12 px-4 sm:px-6 lg:px-8">
+    <div class="bg-white rounded-2xl shadow-lg p-8">
+      
+      <!-- Back Button -->
+      <a href="/dashboard" class="inline-flex items-center px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium rounded-full shadow-md mb-6">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
+        </svg>
+        Back to Dashboard
+      </a>
 
-        <!-- Webcam Preview (Initially Hidden) -->
-        <div class="mt-4 flex justify-center">
-            <video id="video" class="border-4 rounded-lg shadow-lg hidden" width="640" height="480" autoplay></video>
-        </div>
+      <!-- Title -->
+      <h1 class="text-4xl font-extrabold text-center text-blue-700 mb-6">📸 Recognize Patient</h1>
 
-        <button id="recognizeButton" class="mt-4 px-6 py-2 bg-purple-500 text-white rounded-md hover:bg-purple-600 transition">
-            🔍 Recognize Face
+      <!-- Webcam Feed -->
+      <div class="flex justify-center mb-6">
+        <img id="live-feed" class="rounded-xl shadow-md border border-gray-300 w-full max-w-md" />
+      </div>
+
+      <!-- Control Buttons -->
+      <div class="flex justify-center gap-6 mb-8">
+        <form action="/recognize-face" method="get">
+          <button id="start-button" type="submit" class="bg-blue-600 text-white px-6 py-2 rounded-lg shadow-md hover:bg-blue-700 transition duration-200">
+            Start Face Recognition
+          </button>
+        </form>
+        <button id="stop-button" onclick="stopRecognition()" class="bg-red-600 text-white px-6 py-2 rounded-lg shadow-md hover:bg-red-700 transition duration-200 hidden">
+          Stop
         </button>
+      </div>
 
-        <div id="patientDetails" class="mt-6 text-lg font-semibold"></div>
+      <!-- Patient Info -->
+      {% if user %}
+      <div class="mt-10 bg-gray-50 p-6 rounded-xl border border-gray-200">
+        <h2 class="text-2xl font-semibold text-blue-600 mb-4">Patient Details</h2>
+        <p><strong>Name:</strong> {{ user.name }}</p>
+        <p><strong>Age:</strong> {{ user.age }}</p>
+        <p><strong>Gender:</strong> {{ user.gender }}</p>
+        <p><strong>Medical History:</strong> {{ user.history }}</p>
+        <p><strong>Recognized At:</strong> {{ user.recognized_at }}</p>
+      </div>
+      {% elif error %}
+      <div class="mt-6 text-center text-red-600 font-semibold text-lg">
+        {{ error }}
+      </div>
+      {% endif %}
+
     </div>
-
-    <script>
-        let videoStream = null;
-
-        document.getElementById("recognizeButton").addEventListener("click", async function () {
-            const video = document.getElementById("video");
-            video.classList.remove("hidden");
-
-            try {
-                videoStream = await navigator.mediaDevices.getUserMedia({ video: true });
-                video.srcObject = videoStream;
-            } catch (err) {
-                console.error("Error accessing webcam:", err);
-                alert("❌ Please allow camera access!");
-                return;
-            }
-
-            const response = await fetch("/recognize_face", { method: "POST" });
-            const result = await response.json();
-
-            if (result.error) {
-                alert(result.error);
-            } else {
-                document.getElementById("patientDetails").innerHTML = `
-                    <p><strong>Name:</strong> ${result.name}</p>
-                    <p><strong>Age:</strong> ${result.age}</p>
-                    <p><strong>Condition:</strong> ${result.condition}</p>`;
-            }
-
-            // ✅ Auto turn off camera after recognition
-            setTimeout(() => {
-                if (videoStream) {
-                    videoStream.getTracks().forEach(track => track.stop());
-                    video.classList.add("hidden");
-                }
-            }, 3000); // Turns off after 3 seconds
-        });
-    </script>
+  </div>
 
 </body>
 </html>
